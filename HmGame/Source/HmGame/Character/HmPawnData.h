@@ -17,4 +17,6 @@ class HMGAME_API UHmPawnData : public UPrimaryDataAsset
 public:
 	UHmPawnData(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|Pawn")
+	TSubclassOf<APawn> PawnClass;
 };

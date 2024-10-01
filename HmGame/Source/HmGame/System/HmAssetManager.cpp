@@ -5,14 +5,12 @@
 #include "HmGame/HmLogChannels.h"
 
 UHmAssetManager::UHmAssetManager()
-	: Super()
 {
 }
 
 UHmAssetManager& UHmAssetManager::Get()
 {
 	check(GEngine);
-
 	if (UHmAssetManager* Singleton = Cast<UHmAssetManager>(GEngine->AssetManager))
 	{
 		return *Singleton;

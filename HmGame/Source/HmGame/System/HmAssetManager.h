@@ -14,7 +14,7 @@ class HMGAME_API UHmAssetManager : public UAssetManager
 public:
 	UHmAssetManager();
 
-	UHmAssetManager& Get();
+	static UHmAssetManager& Get();
 
 	virtual void StartInitialLoading() final;
 
