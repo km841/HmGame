@@ -23,6 +23,8 @@ public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() final;
 
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) final;
+
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) final;
 
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) final;

@@ -40,6 +40,18 @@ void AHmGameModeBase::InitGameState()
 	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnHmExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
+UClass* AHmGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (const UHmPawnData* PawnData = GetPawnDataForController(InController))
+	{
+		if (PawnData->PawnClass)
+		{
+			return PawnData->PawnClass;
+		}
+	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
 void AHmGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	if (IsExperienceLoaded())
