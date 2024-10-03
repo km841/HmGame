@@ -3,6 +3,7 @@
 
 #include "HmAssetManager.h"
 #include "HmGame/HmLogChannels.h"
+#include "HmGame/HmGameplayTags.h"
 
 UHmAssetManager::UHmAssetManager()
 {
@@ -24,6 +25,7 @@ UHmAssetManager& UHmAssetManager::Get()
 void UHmAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
+	FHmGameplayTags::InitializeNativeTags();
 }
 
 bool UHmAssetManager::ShouldLogAssetLoads()
