@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "HmCharacter.generated.h"
 
+class UHmPawnExtensionComponent;
+
 UCLASS()
 class HMGAME_API AHmCharacter : public ACharacter
 {
@@ -26,4 +28,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hm|Character")
+	TObjectPtr<UHmPawnExtensionComponent> PawnExtComponent;
 };

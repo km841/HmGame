@@ -2,13 +2,16 @@
 
 
 #include "HmCharacter.h"
+#include "HmPawnExtensionComponent.h"
 
 // Sets default values
 AHmCharacter::AHmCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bCanEverTick = false;
 
+	PawnExtComponent = CreateDefaultSubobject<UHmPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
 }
 
 // Called when the game starts or when spawned
