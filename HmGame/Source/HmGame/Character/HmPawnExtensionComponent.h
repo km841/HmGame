@@ -7,6 +7,7 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "HmPawnExtensionComponent.generated.h"
 
+class UHmPawnData;
 /**
  * 
  */
@@ -19,8 +20,19 @@ class HMGAME_API UHmPawnExtensionComponent : public UPawnComponent, public IGame
 
 public:
 	UHmPawnExtensionComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	
+
 	static const FName NAME_ActorFeatureName;
+
+	static UHmPawnExtensionComponent* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UHmPawnExtensionComponent>() : nullptr); }
+
+	template <class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
+
+	void SetPawnData(const UHmPawnData* InPawnData);
+
+
+
+
 	// 컴포넌트나 액터가 생성되는 완전 초반에 일어남
 	// 이 단계에서 컴포넌트 부착함
 	virtual void OnRegister() final;
@@ -30,6 +42,9 @@ public:
 	virtual FName GetFeatureName() const final { return NAME_ActorFeatureName; }
 
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) final;
-	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesireState) const final;
+	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
 	virtual void CheckDefaultInitialization() final;
+
+	UPROPERTY(EditInstanceOnly, Category = "Hm|Pawn")
+	TObjectPtr<const UHmPawnData> PawnData;
 };

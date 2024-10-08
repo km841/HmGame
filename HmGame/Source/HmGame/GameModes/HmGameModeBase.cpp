@@ -10,6 +10,7 @@
 #include "HmGame/Character/HmPawnData.h"
 #include "HmGame/GameModes/HmExperienceManagerComponent.h"
 #include "HmGame/GameModes/HmExperienceDefinition.h"
+#include "HmGame/Character/HmPawnExtensionComponent.h"
 #include "HmGame/System/HmAssetManager.h"
 
 
@@ -62,8 +63,29 @@ void AHmGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* 
 
 APawn* AHmGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 {
-	UE_LOG(LogHm, Log, TEXT("SpawnDefaultPawnAtTransform_Implementation is called!"));
-	return Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	SpawnInfo.bDeferConstruction = true;
+
+	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
+	{
+		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
+		{
+			if (UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
+			{
+				if (const UHmPawnData* PawnData = GetPawnDataForController(NewPlayer))
+				{
+					PawnExtComp->SetPawnData(PawnData);
+				}
+			}
+
+			SpawnedPawn->FinishSpawning(SpawnTransform);
+			return SpawnedPawn;
+		}
+	}
+
+	return nullptr;
 }
 
 void AHmGameModeBase::HandleMatchAssignmentIfNotExceptingOne()

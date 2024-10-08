@@ -16,6 +16,21 @@ UHmPawnExtensionComponent::UHmPawnExtensionComponent(const FObjectInitializer& O
 }
 
 PRAGMA_DISABLE_OPTIMIZATION
+void UHmPawnExtensionComponent::SetPawnData(const UHmPawnData* InPawnData)
+{
+	APawn* Pawn = GetPawnChecked<APawn>();
+	if (Pawn->GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	if (PawnData)
+	{
+		return;
+	}
+
+	PawnData = InPawnData;
+}
 void UHmPawnExtensionComponent::OnRegister()
 {
 	Super::OnRegister();
@@ -55,15 +70,72 @@ void UHmPawnExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason
 	Super::EndPlay(EndPlayReason);
 }
 
+// 관찰하고 있는 Component의 상태가 변경되면 이 함수가 호출된다.
 void UHmPawnExtensionComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
+	// 나 자신을 제외
+	if (Params.FeatureName != NAME_ActorFeatureName)
+	{
+		const FHmGameplayTags& InitTags = FHmGameplayTags::Get();
+		if (Params.FeatureState == InitTags.InitState_DataAvailable)
+		{
+			CheckDefaultInitialization();
+		}
+	}
+
 	IGameFrameworkInitStateInterface::OnActorInitStateChanged(Params);
 }
 
-bool UHmPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesireState) const
+bool UHmPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
 {
+	check(Manager);
 
-	return IGameFrameworkInitStateInterface::CanChangeInitState(Manager, CurrentState, DesireState);
+	APawn* Pawn = GetPawn<APawn>();
+	const FHmGameplayTags& InitTags = FHmGameplayTags::Get();
+
+	if (!CurrentState.IsValid() && DesiredState == InitTags.InitState_Spawned)
+	{
+		if (Pawn)
+			return true;
+	}
+
+	if (CurrentState == InitTags.InitState_Spawned && DesiredState == InitTags.InitState_DataAvailable)
+	{
+		if (!PawnData)
+		{
+			return false;
+		}
+
+		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+		if (bIsLocallyControlled)
+		{
+			if (!GetController<AController>())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	// PawnExtensionComponent는 한 컴포넌트만 무작정 업데이트가되지 않도록, 배리어 역할을 해준다.
+	// 각각의 하위 Component들은 다른 같은 등급의 Component들이 Available이 되었는지 확인할 수 없다.
+	// 다만 한 가지 확인 할 수 있는 것은 PawnExtensionComponent가 Initialized 상태가 되었다는 것은 다른 모든 하위 Component들도
+	// 모두 Available이 되었다는 이야기이므로, 하위 컴포넌트들은 Extension Component가 Initialized 상태인 것만 확인하면
+	// 자신의 상태를 Initialized로 변경한다.
+	if (CurrentState == InitTags.InitState_DataAvailable && DesiredState == InitTags.InitState_DataInitialized)
+	{
+		// Pawn이 소유한 모든 컴포넌트가 InitState_DataAvailable이라면 true를 반환
+		return Manager->HaveAllFeaturesReachedInitState(Pawn, InitTags.InitState_DataAvailable);
+	}
+
+	if (CurrentState == InitTags.InitState_DataInitialized && DesiredState == InitTags.InitState_GameplayReady)
+	{
+		return true;
+	}
+
+
+	return false;
 }
 
 void UHmPawnExtensionComponent::CheckDefaultInitialization()
