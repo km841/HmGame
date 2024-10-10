@@ -29,6 +29,6 @@ public:
 
 	// 현 상태에서 다음 상태로 넘어갈 때 그게 가능한 지 확인하는 함수
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
-	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesireState);
+	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState);
 	virtual void CheckDefaultInitialization() final;
 };

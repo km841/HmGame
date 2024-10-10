@@ -6,6 +6,7 @@
 #include "HmGame/HmGameplayTags.h"
 #include "HmPawnExtensionComponent.h"
 #include "HmGame/Player/HmPlayerState.h"
+#include "HmGame/Character/HmPawnData.h"
 #include "Components/GameFrameworkComponentManager.h"
 
 const FName UHmHeroComponent::NAME_ActorFeatureName("Hero");
@@ -93,8 +94,30 @@ bool UHmHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manage
 	return false;
 }
 
-void UHmHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesireState)
+void UHmHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
+	const FHmGameplayTags& InitTags = FHmGameplayTags::Get();
+
+	if (CurrentState == InitTags.InitState_DataAvailable && DesiredState == InitTags.InitState_DataInitialized)
+	{
+		APawn* Pawn = GetPawn<APawn>();
+		AHmPlayerState* HmPS = GetPlayerState<AHmPlayerState>();
+
+		if (!ensure(Pawn && HmPS))
+		{
+			return;
+		}
+
+		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+		const UHmPawnData* PawnData = nullptr;
+
+		if (UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			PawnData = PawnExtComp->GetPawnData<UHmPawnData>();
+		}
+	}
+
+	IGameFrameworkInitStateInterface::HandleChangeInitState(Manager, CurrentState, DesiredState);
 }
 
 void UHmHeroComponent::CheckDefaultInitialization()

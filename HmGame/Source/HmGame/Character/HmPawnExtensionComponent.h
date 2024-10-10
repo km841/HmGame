@@ -30,7 +30,7 @@ public:
 
 	void SetPawnData(const UHmPawnData* InPawnData);
 
-
+	void SetupPlayerInputComponent();
 
 
 	// 컴포넌트나 액터가 생성되는 완전 초반에 일어남

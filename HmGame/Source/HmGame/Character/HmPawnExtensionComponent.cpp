@@ -31,6 +31,10 @@ void UHmPawnExtensionComponent::SetPawnData(const UHmPawnData* InPawnData)
 
 	PawnData = InPawnData;
 }
+void UHmPawnExtensionComponent::SetupPlayerInputComponent()
+{
+	CheckDefaultInitialization();
+}
 void UHmPawnExtensionComponent::OnRegister()
 {
 	Super::OnRegister();

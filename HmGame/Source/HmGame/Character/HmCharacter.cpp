@@ -33,5 +33,7 @@ void AHmCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// 이 시점에선 반드시 PlayerController가 존재한다!
+	PawnExtComponent->SetupPlayerInputComponent();
 }
 
