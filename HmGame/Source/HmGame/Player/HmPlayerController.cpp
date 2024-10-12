@@ -2,4 +2,10 @@
 
 
 #include "HmPlayerController.h"
+#include "HmGame/Camera/HmPlayerCameraManager.h"
 
+AHmPlayerController::AHmPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	PlayerCameraManagerClass = AHmPlayerCameraManager::StaticClass();
+}

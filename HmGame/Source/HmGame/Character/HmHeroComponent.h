@@ -7,6 +7,7 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "HmHeroComponent.generated.h"
 
+class UHmCameraMode;
 /**
  * 
  */
@@ -31,4 +32,7 @@ public:
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState);
 	virtual void CheckDefaultInitialization() final;
+
+	
+	TSubclassOf<UHmCameraMode> DetermineCameraMode() const;
 };

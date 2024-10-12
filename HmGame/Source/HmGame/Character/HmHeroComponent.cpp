@@ -7,6 +7,7 @@
 #include "HmPawnExtensionComponent.h"
 #include "HmGame/Player/HmPlayerState.h"
 #include "HmGame/Character/HmPawnData.h"
+#include "HmGame/Camera/HmCameraComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 
 const FName UHmHeroComponent::NAME_ActorFeatureName("Hero");
@@ -115,9 +116,19 @@ void UHmHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Man
 		{
 			PawnData = PawnExtComp->GetPawnData<UHmPawnData>();
 		}
+
+		if (bIsLocallyControlled && PawnData)
+		{
+			if (UHmCameraComponent* CameraComponent = UHmCameraComponent::FindCameraComponent(Pawn))
+			{
+				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+			}
+		}
 	}
 
-	IGameFrameworkInitStateInterface::HandleChangeInitState(Manager, CurrentState, DesiredState);
+
+
+	//IGameFrameworkInitStateInterface::HandleChangeInitState(Manager, CurrentState, DesiredState);
 }
 
 void UHmHeroComponent::CheckDefaultInitialization()
@@ -133,4 +144,23 @@ void UHmHeroComponent::CheckDefaultInitialization()
 
 	// 내부에서 While문으로 각 상태에 대해 CanChangeInitState를 계~속 호출한다
 	ContinueInitStateChain(StateChain);
+}
+
+TSubclassOf<UHmCameraMode> UHmHeroComponent::DetermineCameraMode() const
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return nullptr;
+	}
+
+	if (UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (const UHmPawnData* PawnData = PawnExtComp->GetPawnData<UHmPawnData>())
+		{
+			return PawnData->DefaultCameraMode;
+		}
+	}
+
+	return nullptr;
 }

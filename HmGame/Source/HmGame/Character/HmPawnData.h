@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "HmPawnData.generated.h"
 
+class UHmCameraMode;
 /**
  * 
  */
@@ -19,4 +20,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|Pawn")
 	TSubclassOf<APawn> PawnClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|Camera")
+	TSubclassOf<UHmCameraMode> DefaultCameraMode;
 };

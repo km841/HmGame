@@ -13,5 +13,8 @@ UCLASS()
 class HMGAME_API AHmPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	AHmPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
 };

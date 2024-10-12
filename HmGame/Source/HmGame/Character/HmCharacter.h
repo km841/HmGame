@@ -7,6 +7,7 @@
 #include "HmCharacter.generated.h"
 
 class UHmPawnExtensionComponent;
+class UHmCameraComponent;
 
 UCLASS()
 class HMGAME_API AHmCharacter : public ACharacter
@@ -31,4 +32,7 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hm|Character")
 	TObjectPtr<UHmPawnExtensionComponent> PawnExtComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hm|Character")
+	TObjectPtr<UHmCameraComponent> CameraComponent;
 };

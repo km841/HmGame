@@ -3,6 +3,7 @@
 
 #include "HmCharacter.h"
 #include "HmPawnExtensionComponent.h"
+#include "HmGame/Camera/HmCameraComponent.h"
 
 // Sets default values
 AHmCharacter::AHmCharacter()
@@ -12,6 +13,11 @@ AHmCharacter::AHmCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PawnExtComponent = CreateDefaultSubobject<UHmPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+
+	{
+		CameraComponent = CreateDefaultSubobject<UHmCameraComponent>(TEXT("CameraComponent"));
+		CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
+	}
 }
 
 // Called when the game starts or when spawned
