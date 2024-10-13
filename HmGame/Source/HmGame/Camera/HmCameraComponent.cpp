@@ -36,9 +36,9 @@ void UHmCameraComponent::UpdateCameraModes()
 	{
 		// 현재 플레이어가 사용하는 카메라 모드를 매 프레임 저장한다.
 		// 왜 매 프레임 저장하는가?
-		if (const TSubclassOf<UHmCameraMode> CameraMode = DetermineCameraModeDelegate.Execute())
+		if (TSubclassOf<UHmCameraMode> CameraMode = DetermineCameraModeDelegate.Execute())
 		{
-
+			CameraModeStack->PushCameraMode(CameraMode);
 		}
 	}
 }

@@ -25,6 +25,7 @@ public:
 
 	static UHmCameraComponent* FindCameraComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UHmCameraComponent>() : nullptr); }
 
+	AActor* GetTargetActor() const { return Cast<AActor>(GetOuter()); }
 	void UpdateCameraModes();
 
 public:
