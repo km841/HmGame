@@ -6,6 +6,7 @@
 #include "HmCameraMode.h"
 #include "HmCameraMode_ThirdPerson.generated.h"
 
+class UCurveVector;
 /**
  * 
  */
@@ -16,5 +17,11 @@ class HMGAME_API UHmCameraMode_ThirdPerson : public UHmCameraMode
 
 public:
 	UHmCameraMode_ThirdPerson(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+
+	virtual void UpdateView(float DeltaTime) override;
+
+	UPROPERTY(EditDefaultsOnly, Category="Third Person")
+	TObjectPtr<const UCurveVector> TargetOffsetCurve;
 
 };

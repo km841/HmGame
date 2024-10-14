@@ -50,7 +50,7 @@ public:
 	FRotator GetPivotRotation() const;
 
 	// Third Person View에서 해당 함수를 Override에서 사용하기 때문에 원래 Lyra에서는 가상함수로 되어 있다!
-	void UpdateView(float DeltaTime);
+	virtual void UpdateView(float DeltaTime);
 	void UpdateBlending(float DeltaTime);
 
 	void UpdateCameraMode(float DeltaTime);

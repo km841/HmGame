@@ -13,6 +13,30 @@ FHmCameraModeView::FHmCameraModeView()
 {
 }
 
+void FHmCameraModeView::Blend(const FHmCameraModeView& Other, float OtherWeight)
+{
+	if (OtherWeight <= 0.0f)
+	{
+		return;
+	}
+	else if (OtherWeight >= 1.0f)
+	{
+		*this = Other;
+		return;
+	}
+
+	// Location + OtherWeight * (Other.Location - Location)
+	Location = FMath::Lerp(Location, Other.Location, OtherWeight);
+
+	const FRotator DeltaRotation = (Other.Rotation - Rotation).GetNormalized();
+	Rotation = Rotation + (OtherWeight * DeltaRotation);
+
+	const FRotator DeltaControlRotation = (Other.ControlRotation - ControlRotation).GetNormalized();
+	ControlRotation = ControlRotation + (OtherWeight * DeltaControlRotation);
+
+	FieldOfView = FMath::Lerp(FieldOfView, Other.FieldOfView, OtherWeight);
+}
+
 UHmCameraMode::UHmCameraMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -88,6 +112,7 @@ void UHmCameraMode::UpdateView(float DeltaTime)
 
 void UHmCameraMode::UpdateBlending(float DeltaTime)
 {
+	// 시간이 지남에 따라 BlendAlpha는 선형적으로 증가
 	if (BlendTime > 0.f)
 	{
 		BlendAlpha += (DeltaTime / BlendTime);
@@ -224,6 +249,8 @@ void UHmCameraModeStack::UpdateStack(float DeltaTime)
 
 		CameraMode->UpdateCameraMode(DeltaTime);
 
+		// 만약 하나라도 BlendWeight가 1.0에 도달했다면, 스택을 비워준다
+		// Why? 내부의 각 GameMode의 BlendWeight의 합계를 1.0으로 유지하기 위해
 		if (CameraMode->BlendWeight >= 1.0f)
 		{
 			RemoveIndex = (StackIndex + 1);
@@ -240,11 +267,38 @@ void UHmCameraModeStack::UpdateStack(float DeltaTime)
 
 void UHmCameraModeStack::BlendStack(FHmCameraModeView& OutCameraModeView)
 {
+	const int32 StackSize = CameraModeStack.Num();
+	if (StackSize <= 0)
+	{
+		return;
+	}
+
+	// 가장 처음 들어온 요소 (0번 인덱스로 들어오므로 인덱스가 클 수록 먼저 들어온 요소)
+	const UHmCameraMode* CameraMode = CameraModeStack[StackSize - 1];
+	check(CameraMode);
+
+	OutCameraModeView = CameraMode->View;
+
+	// 두번째로 처음 들어온 요소부터 시작
+	for (int32 StackIndex = (StackSize - 2); StackIndex >= 0; --StackIndex)
+	{
+		// 그 요소부터 가장 마지막에 들어온 요소까지 순회하며 Blend 
+		CameraMode = CameraModeStack[StackIndex];
+		check(CameraMode);
+
+		OutCameraModeView.Blend(CameraMode->View, CameraMode->BlendWeight);
+	}
+
 }
 
 void UHmCameraModeStack::EvaluateStack(float DeltaTime, FHmCameraModeView& OutCameraModeView)
 {
+	// Camera Mode View 파라미터 세팅
+	// Blend Function과 Lerp 함수를 통해 BlendWeight 계산
 	UpdateStack(DeltaTime);
+
+	// Out으로 들어온 CameraModeView와 CameraModeStack을 순회하며 블렌딩을 진행하고,
+	// 모든 CameraMode의 가중치(BlendWeight)의 합은 1을 넘지 않는다.
 	BlendStack(OutCameraModeView);
 }
 
