@@ -23,4 +23,7 @@ void FHmGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InitState_DataAvailable, "InitState.DataAvailable", "2: All require data has been loaded/replicated and is ready for data");
 	AddTag(InitState_DataInitialized, "InitState.DataInitialized", "3: The available data has been initialized for this actor/component");
 	AddTag(InitState_GameplayReady, "InitState.GameplayReady", "4: The actor/component is fully ready for active gameplay");
+
+	AddTag(InputTag_Move, "InputTag.Move", "");
+	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 }

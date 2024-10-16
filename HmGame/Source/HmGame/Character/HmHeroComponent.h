@@ -35,4 +35,5 @@ public:
 
 	
 	TSubclassOf<UHmCameraMode> DetermineCameraMode() const;
+
 };

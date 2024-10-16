@@ -9,6 +9,7 @@
 #include "HmGame/Character/HmPawnData.h"
 #include "HmGame/Camera/HmCameraComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
+//#include "HmGame/Input/HmMappingConfigPair.h"
 
 const FName UHmHeroComponent::NAME_ActorFeatureName("Hero");
 
