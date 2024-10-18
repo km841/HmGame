@@ -7,7 +7,9 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "HmHeroComponent.generated.h"
 
+struct FInputActionValue;
 class UHmCameraMode;
+struct FHmMappingConfigPair;
 /**
  * 
  */
@@ -32,8 +34,13 @@ public:
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState);
 	virtual void CheckDefaultInitialization() final;
-
 	
 	TSubclassOf<UHmCameraMode> DetermineCameraMode() const;
+	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
+	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_LookMouse(const FInputActionValue& InputActionValue);
+
+	UPROPERTY(EditAnywhere)
+	TArray<FHmMappingConfigPair> DefaultInputConfigs;
 };

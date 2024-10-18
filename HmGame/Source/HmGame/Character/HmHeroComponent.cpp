@@ -4,12 +4,17 @@
 #include "HmHeroComponent.h"
 #include "HmGame/HmLogChannels.h"
 #include "HmGame/HmGameplayTags.h"
+#include "EnhancedInputSubsystems.h"
+#include "PlayerMappableInputConfig.h"
 #include "HmPawnExtensionComponent.h"
 #include "HmGame/Player/HmPlayerState.h"
 #include "HmGame/Character/HmPawnData.h"
 #include "HmGame/Camera/HmCameraComponent.h"
+#include "HmGame/Input/HmMappingConfigPair.h"
+#include "HmGame/Input/HmInputComponent.h"
+#include "HmGame/Player/HmPlayerController.h"
+#include "InputActionValue.h"
 #include "Components/GameFrameworkComponentManager.h"
-//#include "HmGame/Input/HmMappingConfigPair.h"
 
 const FName UHmHeroComponent::NAME_ActorFeatureName("Hero");
 
@@ -125,6 +130,14 @@ void UHmHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Man
 				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
 			}
 		}
+
+		if (AHmPlayerController* PC = GetController<AHmPlayerController>())
+		{
+			if (Pawn->InputComponent != nullptr)
+			{
+				InitializePlayerInput(Pawn->InputComponent);
+			}
+		}
 	}
 
 
@@ -164,4 +177,114 @@ TSubclassOf<UHmCameraMode> UHmHeroComponent::DetermineCameraMode() const
 	}
 
 	return nullptr;
+}
+
+void UHmHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
+{
+	check(PlayerInputComponent);
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const ULocalPlayer* LP = Cast<ULocalPlayer>(PC->GetLocalPlayer());
+	check(LP);
+
+	// 이걸 가져온 이유는 PlayerController안에 LocalPlayer가 있고, 
+	// LocalPlayer 안에 EnhancedInputSubsystem이 있기 때문
+	// 그리고 이 EnhancedInputSubsystem 안에 우리의 Input을 등록시켜야 함
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
+	if (const UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (const UHmPawnData* PawnData = PawnExtComp->GetPawnData<UHmPawnData>())
+		{
+			if (const UHmInputConfig* InputConfig = PawnData->InputConfig)
+			{
+				const FHmGameplayTags& GameplayTags = FHmGameplayTags::Get();
+
+				for (const FHmMappingConfigPair& Pair : DefaultInputConfigs)
+				{
+					if (Pair.bShouldActivateAutomatically)
+					{
+						FModifyContextOptions Options = {};
+						Options.bIgnoreAllPressedKeysUntilRelease = false;
+
+						Subsystem->AddPlayerMappableConfig(Pair.Config.LoadSynchronous(), Options);
+					}
+				}
+
+				UHmInputComponent* HmIC = CastChecked<UHmInputComponent>(PlayerInputComponent);
+				{
+					HmIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+					HmIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+				}
+			}
+		}
+	}
+}
+
+void UHmHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
+	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+
+	if (Controller)
+	{
+		const FVector2D Value = InputActionValue.Get<FVector2D>();
+		// 현재 핸들링되어 있는 값.
+		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+
+		if (Value.X != 0.0f)
+		{
+			// 현재 핸들링된 값(로컬)을 월드로 변환
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+
+			// 이 월드좌표를 기준으로 X 변위량만큼 이동
+			Pawn->AddMovementInput(MovementDirection, Value.X);
+		}
+
+		if (Value.Y != 0.0f)
+		{
+			// 현재 핸들링된 값(로컬)을 월드로 변환
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+
+			// 이 월드좌표를 기준으로 X 변위량만큼 이동
+			Pawn->AddMovementInput(MovementDirection, Value.Y);
+		}
+
+
+	}
+}
+
+void UHmHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+	if (Value.X != 0.0f)
+	{
+		// X에는 Yaw값이 있다.
+		Pawn->AddControllerYawInput(Value.X);
+	}
+
+	if (Value.Y != 0.0f)
+	{
+		double AimInversionValue = -Value.Y;
+		Pawn->AddControllerPitchInput(AimInversionValue);
+	}
+
+
 }

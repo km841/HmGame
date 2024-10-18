@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "HmGame/Input/HmInputConfig.h"
 #include "HmPawnData.generated.h"
 
 class UHmCameraMode;
-/**
+/** 
  * 
  */
 UCLASS()
@@ -23,4 +24,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|Camera")
 	TSubclassOf<UHmCameraMode> DefaultCameraMode;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|InputConfig")
+	TObjectPtr<UHmInputConfig> InputConfig;
 };
