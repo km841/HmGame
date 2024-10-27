@@ -17,6 +17,7 @@ public class HmGame : ModuleRules
 			"GameplayTags",
 			"ModularGameplay",
 			"GameFeatures",
+			"CommonUser",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
