@@ -11,6 +11,7 @@
 #include "HmGame/GameModes/HmExperienceManagerComponent.h"
 #include "HmGame/GameModes/HmExperienceDefinition.h"
 #include "HmGame/Character/HmPawnExtensionComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "HmGame/System/HmAssetManager.h"
 
 
@@ -88,6 +89,7 @@ APawn* AHmGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 	return nullptr;
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AHmGameModeBase::HandleMatchAssignmentIfNotExceptingOne()
 {
 	FPrimaryAssetId ExperienceId;
@@ -98,6 +100,13 @@ void AHmGameModeBase::HandleMatchAssignmentIfNotExceptingOne()
 
 	UWorld* World = GetWorld();
 
+	if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
+	{
+		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
+		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UHmExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions));
+
+	}
+
 	if (!ExperienceId.IsValid())
 	{
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("HmExperienceDefinition"), FName("B_HmDefaultExperience"));
@@ -105,6 +114,7 @@ void AHmGameModeBase::HandleMatchAssignmentIfNotExceptingOne()
 
 	OnMatchAssignmentGiven(ExperienceId);
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AHmGameModeBase::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId)
 {
