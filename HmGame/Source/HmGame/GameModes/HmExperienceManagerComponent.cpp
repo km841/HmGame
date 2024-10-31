@@ -5,6 +5,7 @@
 #include "HmGame/System/HmAssetManager.h"
 #include "GameFeaturesSubsystemSettings.h"
 #include "HmGame/GameModes/HmExperienceDefinition.h"
+#include "GameFeaturesSubsystem.h"
 
 void UHmExperienceManagerComponent::CallOrRegister_OnExperienceLoaded(FOnHmExperienceLoaded::FDelegate&& Delegate)
 {
@@ -97,7 +98,49 @@ void UHmExperienceManagerComponent::StartExperienceLoad()
 void UHmExperienceManagerComponent::OnExperienceLoadComplete()
 {
 	static int32 OnExperienceLoadComplete_FrameNumber = GFrameNumber;
-	OnExperienceFullLoadCompleted();
+
+	check(LoadState == EHmExperienceLoadState::Loading);
+	check(CurrentExperience);
+
+	GameFeaturePluginURLs.Reset();
+
+	auto CollectGameFeaturePluginURLs = [This = this](const UPrimaryDataAsset* Context, const TArray<FString>& FeaturePluginList)
+	{
+		for (const FString& PluginName : FeaturePluginList)
+		{
+			FString PluginURL;
+			if (UGameFeaturesSubsystem::Get().GetPluginURLByName(PluginName, PluginURL))
+			{
+				This->GameFeaturePluginURLs.AddUnique(PluginURL);
+			}
+		}
+
+	};
+
+	CollectGameFeaturePluginURLs(CurrentExperience, CurrentExperience->GameFeaturesToEnable);
+
+	NumGameFeaturePluginLoading = GameFeaturePluginURLs.Num();
+	if (NumGameFeaturePluginLoading)
+	{
+		LoadState = EHmExperienceLoadState::LoadingGameFeatures;
+		for (const FString& PluginURL : GameFeaturePluginURLs)
+		{
+			UGameFeaturesSubsystem::Get().LoadAndActivateGameFeaturePlugin(PluginURL, FGameFeaturePluginLoadComplete::CreateUObject(this, &ThisClass::OnGameFeaturePluginLoadComplete));
+		}
+	}
+	else
+	{
+		OnExperienceFullLoadCompleted();
+	}
+}
+
+void UHmExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result)
+{
+	NumGameFeaturePluginLoading--;
+	if (NumGameFeaturePluginLoading == 0)
+	{
+		OnExperienceFullLoadCompleted();
+	}
 }
 
 void UHmExperienceManagerComponent::OnExperienceFullLoadCompleted()

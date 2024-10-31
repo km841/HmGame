@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
+#include "GameFeaturePluginOperationResult.h"
 #include "HmExperienceManagerComponent.generated.h"
 
 /**
@@ -16,6 +17,7 @@ enum class EHmExperienceLoadState
 {
 	Unloaded,
 	Loading,
+	LoadingGameFeatures,
 	Loaded,
 	Deactivating,
 };
@@ -35,6 +37,9 @@ public:
 	void ServerSetCurrentExperience(FPrimaryAssetId ExperienceId);
 	void StartExperienceLoad();
 	void OnExperienceLoadComplete();
+
+	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
+
 	void OnExperienceFullLoadCompleted();
 
 	const UHmExperienceDefinition* GetCurrentExperienceChecked() const;
@@ -46,5 +51,8 @@ public:
 	EHmExperienceLoadState LoadState = EHmExperienceLoadState::Unloaded;
 
 	FOnHmExperienceLoaded OnExperienceLoaded;
+
+	int32 NumGameFeaturePluginLoading = 0;
+	TArray<FString> GameFeaturePluginURLs;
 	
 };
