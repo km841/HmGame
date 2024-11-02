@@ -7,6 +7,8 @@
 #include "HmExperienceDefinition.generated.h"
 
 class UHmPawnData;
+class UHmExperienceActionSet;
+class UGameFeatureAction;
 
 UCLASS()
 class HMGAME_API UHmExperienceDefinition : public UPrimaryDataAsset
@@ -21,4 +23,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
 	TArray<FString> GameFeaturesToEnable;
+
+	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
+	TArray<TObjectPtr<UHmExperienceActionSet>> ActionSets;
+
+	UPROPERTY(EditDefaultsOnly, Category="Actions")
+	TArray<TObjectPtr<UGameFeatureAction>> Actions;
 };

@@ -27,6 +27,8 @@ public:
 
 	static const FName NAME_ActorFeatureName;
 
+	static const FName NAME_BindInputsNow;
+
 	virtual FName GetFeatureName() const final { return NAME_ActorFeatureName; }
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) final;
 

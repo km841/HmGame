@@ -18,6 +18,7 @@ enum class EHmExperienceLoadState
 	Unloaded,
 	Loading,
 	LoadingGameFeatures,
+	ExecutingActions,
 	Loaded,
 	Deactivating,
 };

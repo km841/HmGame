@@ -17,6 +17,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 
 const FName UHmHeroComponent::NAME_ActorFeatureName("Hero");
+const FName UHmHeroComponent::NAME_BindInputsNow("BindInputsNow");
 
 UHmHeroComponent::UHmHeroComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -230,6 +231,9 @@ void UHmHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			}
 		}
 	}
+
+	// GameFeatureAction_AddInputConfig의 HandlePawnExtension에 콜백 함수 전달
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 
 void UHmHeroComponent::Input_Move(const FInputActionValue& InputActionValue)

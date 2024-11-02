@@ -3,9 +3,11 @@
 
 #include "HmExperienceManagerComponent.h"
 #include "HmGame/System/HmAssetManager.h"
-#include "GameFeaturesSubsystemSettings.h"
 #include "HmGame/GameModes/HmExperienceDefinition.h"
+#include "HmGame/GameModes/HmExperienceActionSet.h"
+#include "GameFeaturesSubsystemSettings.h"
 #include "GameFeaturesSubsystem.h"
+#include "GameFeatureAction.h"
 
 void UHmExperienceManagerComponent::CallOrRegister_OnExperienceLoaded(FOnHmExperienceLoaded::FDelegate&& Delegate)
 {
@@ -143,15 +145,51 @@ void UHmExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::Ga
 	}
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void UHmExperienceManagerComponent::OnExperienceFullLoadCompleted()
 {
 	check(LoadState != EHmExperienceLoadState::Loaded);
+
+	{
+		LoadState = EHmExperienceLoadState::ExecutingActions;
+
+		FGameFeatureActivatingContext Context;
+		{
+			const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
+			if (ExistingWorldContext)
+			{
+				Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
+			}
+		}
+
+		auto ActivateListOfActions = [&Context](const TArray<UGameFeatureAction*>& ActionList)
+		{
+			for (UGameFeatureAction* Action : ActionList)
+			{
+				// 명시적으로 GameFeatureAction에 대해 Registering -> Loading -> Activating 호출
+				if (Action)
+				{
+					Action->OnGameFeatureRegistering();
+					Action->OnGameFeatureLoading();
+					Action->OnGameFeatureActivating(Context);
+				}
+			}
+		};
+
+		ActivateListOfActions(CurrentExperience->Actions);
+
+		for (const TObjectPtr<UHmExperienceActionSet>& ActionSet : CurrentExperience->ActionSets)
+		{
+			ActivateListOfActions(ActionSet->Actions);
+		}
+	}
 
 	LoadState = EHmExperienceLoadState::Loaded;
 	OnExperienceLoaded.Broadcast(CurrentExperience);
 	OnExperienceLoaded.Clear();
 
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 const UHmExperienceDefinition* UHmExperienceManagerComponent::GetCurrentExperienceChecked() const
 {
