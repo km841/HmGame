@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "ModularCharacter.h"
 #include "HmCharacter.generated.h"
 
 class UHmPawnExtensionComponent;
 class UHmCameraComponent;
 
 UCLASS()
-class HMGAME_API AHmCharacter : public ACharacter
+class HMGAME_API AHmCharacter : public AModularCharacter
 {
 	GENERATED_BODY()
 

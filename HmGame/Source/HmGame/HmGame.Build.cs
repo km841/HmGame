@@ -16,6 +16,7 @@ public class HmGame : ModuleRules
 			"EnhancedInput",
 			"GameplayTags",
 			"ModularGameplay",
+			"ModularGameplayActors",
 			"GameFeatures",
 			"CommonUser",
 		});
