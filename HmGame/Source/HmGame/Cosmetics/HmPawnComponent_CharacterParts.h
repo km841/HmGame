@@ -37,6 +37,8 @@ struct FHmCharacterPartList
 		:OwnerComponent(nullptr)
 	{}
 
+	FHmCharacterPartHandle AddEntry(FHmCharacterPart NewPart);
+
 	// 현재 인스턴스화된 Character Parts
 	UPROPERTY()
 	TArray<FHmAppliedCharacterPartEntry> Entries;
@@ -54,6 +56,8 @@ class UHmPawnComponent_CharacterParts : public UPawnComponent
 	GENERATED_BODY()
 public:
 	UHmPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
+	FHmCharacterPartHandle AddCharacterPart(const FHmCharacterPart& NewPart);
 
 	UPROPERTY()
 	FHmCharacterPartList CharacterPartList;

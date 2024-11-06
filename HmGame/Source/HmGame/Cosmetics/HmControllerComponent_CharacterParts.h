@@ -4,6 +4,8 @@
 #include "HmCharacterPartTypes.h"
 #include "HmControllerComponent_CharacterParts.generated.h"
 
+class UHmPawnComponent_CharacterParts;
+
 
 USTRUCT()
 struct FHmControllerCharacterPartEntry
@@ -27,6 +29,12 @@ class UHmControllerComponent_CharacterParts : public UControllerComponent
 	GENERATED_BODY()
 public:
 	UHmControllerComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UHmPawnComponent_CharacterParts* GetPawnCustomizer() const;
+	void AddCharacterPartInternal(const FHmCharacterPart& NewPart);
+
+	UFUNCTION(BlueprintCallable, Category = Cosmetics)
+	void AddCharacterPart(const FHmCharacterPart& NewPart);
 
 	UPROPERTY(EditAnywhere, Category = Cosmetics)
 	TArray<FHmControllerCharacterPartEntry> CharacterParts;
