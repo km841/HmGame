@@ -37,7 +37,13 @@ struct FHmCharacterPartList
 		:OwnerComponent(nullptr)
 	{}
 
+	FGameplayTagContainer CollectCombinedTags() const;
+
+	bool SpawnActorForEntry(FHmAppliedCharacterPartEntry& Entry);
+	void DestroyActorForEntry(FHmAppliedCharacterPartEntry& Entry);
+
 	FHmCharacterPartHandle AddEntry(FHmCharacterPart NewPart);
+	void RemoveEntry(FHmCharacterPartHandle Handle);
 
 	// 현재 인스턴스화된 Character Parts
 	UPROPERTY()
@@ -56,8 +62,13 @@ class UHmPawnComponent_CharacterParts : public UPawnComponent
 	GENERATED_BODY()
 public:
 	UHmPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	
+
+	USkeletalMeshComponent* GetParentMeshComponent() const;
+	USceneComponent* GetSceneComponentToAttachTo() const;
+	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
+	void BroadcastChanged();
 	FHmCharacterPartHandle AddCharacterPart(const FHmCharacterPart& NewPart);
+	void RemoveCharacterPart(FHmCharacterPartHandle Handle);
 
 	UPROPERTY()
 	FHmCharacterPartList CharacterPartList;

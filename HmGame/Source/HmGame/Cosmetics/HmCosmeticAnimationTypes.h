@@ -23,6 +23,9 @@ struct FHmAnimBodyStyleSelectionSet
 {
 	GENERATED_BODY()
 
+	// GameplayTag를 통해 (CosmeticTags), Mesh Rules에 따라 알맞은 BodyStyle을 반환한다!
+	USkeletalMesh* SelectBestBodyStyle(const FGameplayTagContainer& CosmeticTags) const;
+
 	// AnimLayer를 적용할 SkeletalMesh를 들고 있음, Animation->Mesh 간 Rules를 MeshRules라고 생각하면 됨
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FHmAnimBodyStyleSelectionEntry> MeshRules;
