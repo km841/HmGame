@@ -34,7 +34,7 @@ struct FHmCharacterPartList
 	{}
 
 	FHmCharacterPartList(UHmPawnComponent_CharacterParts* InOwnerComponent)
-		:OwnerComponent(nullptr)
+		:OwnerComponent(InOwnerComponent)
 	{}
 
 	FGameplayTagContainer CollectCombinedTags() const;

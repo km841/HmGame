@@ -30,11 +30,21 @@ class UHmControllerComponent_CharacterParts : public UControllerComponent
 public:
 	UHmControllerComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	UHmPawnComponent_CharacterParts* GetPawnCustomizer() const;
 	void AddCharacterPartInternal(const FHmCharacterPart& NewPart);
 
 	UFUNCTION(BlueprintCallable, Category = Cosmetics)
 	void AddCharacterPart(const FHmCharacterPart& NewPart);
+
+	void RemoveAllCharacterParts();
+
+	// UFUNCTION으로 정의하지 않으면 AddDynamic이 되지 않는다!!
+	// AddDynamic은 결국 UFUNCTION을 바인드한다는 뜻
+	UFUNCTION()
+	void OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
 
 	UPROPERTY(EditAnywhere, Category = Cosmetics)
 	TArray<FHmControllerCharacterPartEntry> CharacterParts;

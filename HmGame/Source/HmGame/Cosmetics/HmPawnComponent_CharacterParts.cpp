@@ -5,6 +5,7 @@
 
 UHmPawnComponent_CharacterParts::UHmPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, CharacterPartList(this)
 {
 
 }
