@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Blueprintable)
 class HMGAME_API UHmEquipmentInstance : public UObject
 {
 	GENERATED_BODY()

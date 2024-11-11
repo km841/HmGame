@@ -3,6 +3,38 @@
 #include "GameplayTagContainer.h"
 #include "HmCosmeticAnimationTypes.generated.h"
 
+class USkeletalMesh;
+class UPhysicsAsset;
+
+USTRUCT(BlueprintType)
+struct FHmAnimLayerSelectionEntry
+{
+	GENERATED_BODY()
+
+	// 피스톨을 들고 있는 경우 애니메이션만 달라질 수 있는 경우의 수?
+	// 애니메이션을 팔 수도 있다! 애니메이션 스킨과 같은 개념!
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UAnimInstance> Layer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer RequiredTags;
+};
+
+USTRUCT(BlueprintType)
+struct FHmAnimLayerSelectionSet
+{
+	GENERATED_BODY()
+
+	// AnimInstance의 Rule을 가진 LayerRules로 보면 됨
+	// AnimBodyStyleSelection의 Rules와 같은 개념..
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FHmAnimLayerSelectionEntry> LayerRules;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UAnimInstance> DefaultLayer;
+};
+
+
 USTRUCT(BlueprintType)
 struct FHmAnimBodyStyleSelectionEntry
 {
