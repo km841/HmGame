@@ -5,6 +5,7 @@
 
 class UHmInventoryItemInstance;
 class UHmEquipmentInstance;
+class UHmEquipmentManagerComponent;
 
 
 // HUD의 QuickBar를 생각하면 된다
@@ -20,6 +21,19 @@ class UHmQuickBarComponent : public UControllerComponent
 
 public:
 	UHmQuickBarComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void BeginPlay() override;
+
+	UHmEquipmentManagerComponent* FindEquipmentManager() const;
+
+	void EquipItemInSlot();
+	void UnequipItemInSlot();
+
+	UFUNCTION(BlueprintCallable)
+	void AddItemToSlot(int32 SlotIndex, UHmInventoryItemInstance* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Hm")
+	void SetActiveSlotIndex(int32 NewIndex);
 
 	// HUD Quick Bar Slot 개수
 	UPROPERTY()

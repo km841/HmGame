@@ -14,6 +14,14 @@ class UHmInventoryItemInstance : public UObject
 public:
 	UHmInventoryItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	const UHmInventoryItemFragment* FindFragmentByClass(TSubclassOf<UHmInventoryItemFragment> FragmentClass) const;
+
+	template <typename ResultClass>
+	const ResultClass* FindFragmentByClass() const
+	{
+		return (ResultClass*)FindFragmentByClass(ResultClass::StaticClass());
+	}
+
 	/* Inventory Item의 인스턴스에는 무엇으로 정의되었는지 HmInventoryItemDefinition을 들고 있다. */
 	UPROPERTY()
 	TSubclassOf<UHmInventoryItemDefinition> ItemDef;

@@ -29,6 +29,8 @@ class UHmInventoryItemDefinition : public UObject
 public:
 	UHmInventoryItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	const UHmInventoryItemFragment* FindFragmentByClass(TSubclassOf<UHmInventoryItemFragment> FragmentClass) const;
+
 	// InventoryItem 정의(메타) 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display)
 	FText DisplayName;
@@ -37,6 +39,6 @@ public:
 	// Actor - Component라는 명칭은 중복이라 사용할 수 없으니
 	// Fragment라는 명칭을 이용해서 관계를 정의
 	// 총을 예로 들면 Ammo와 같은 값들을 Status Component에 관리하는 것.
-	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category=Display)
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = Display)
 	TArray<TObjectPtr<UHmInventoryItemFragment>> Fragments;
 };

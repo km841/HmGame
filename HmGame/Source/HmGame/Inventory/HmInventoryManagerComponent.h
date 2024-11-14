@@ -4,6 +4,7 @@
 #include "HmInventoryManagerComponent.generated.h"
 
 class UHmInventoryItemInstance;
+class UHmInventoryItemDefinition;
 
 USTRUCT(BlueprintType)
 struct FHmInventoryEntry
@@ -23,6 +24,8 @@ struct FHmInventoryList
 		: OwnerComponent(InOwnerComponent)
 	{}
 
+	UHmInventoryItemInstance* AddEntry(TSubclassOf<UHmInventoryItemDefinition> ItemDef);
+
 	UPROPERTY()
 	TArray<FHmInventoryEntry> Entries;
 
@@ -36,6 +39,9 @@ class UHmInventoryManagerComponent : public UActorComponent
 	GENERATED_BODY()
 public:
 	UHmInventoryManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION(BlueprintCallable, Category = Inventory)
+	UHmInventoryItemInstance* AddItemDefinition(TSubclassOf<UHmInventoryItemDefinition> ItemDef);
 
 	UPROPERTY()
 	FHmInventoryList InventoryList;

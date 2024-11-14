@@ -18,6 +18,7 @@ public:
 	UAsyncAction_ExperienceReady(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// UAsyncAction_ExperienceReady를 생성하고 기다리는 BP 호출
+	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 	static UAsyncAction_ExperienceReady* WaitForExperienceReady(UObject* WorldContextObject);
 
 	// UBlueprintAsyncActionBase Interface
