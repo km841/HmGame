@@ -30,6 +30,9 @@ struct FHmEquipmentList
 		: OwnerComponent(InOwnerComponent)
 	{}
 
+	UHmEquipmentInstance* AddEntry(TSubclassOf<UHmEquipmentDefinition> EquipmentDefinition);
+	void RemoveEntry(UHmEquipmentInstance* Instance);
+
 	// 장착물에 대한 관리 리스트
 	UPROPERTY()
 	TArray<FHmAppliedEquipmentEntry> Entries;
@@ -45,6 +48,9 @@ class UHmEquipmentManagerComponent : public UPawnComponent
 	GENERATED_BODY()
 public:
 	UHmEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UHmEquipmentInstance* EquipItem(TSubclassOf<UHmEquipmentDefinition> EquipmentDefinition);
+	void UnequipItem(UHmEquipmentInstance* ItemInstance);
 
 	UPROPERTY()
 	FHmEquipmentList EquipmentList;

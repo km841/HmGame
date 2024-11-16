@@ -9,6 +9,7 @@
 #include "UObject/UObjectGlobals.h"
 #include "HmEquipmentInstance.generated.h"
 
+struct FHmEquipmentActorToSpawn;
 /**
  * 
  */
@@ -18,6 +19,21 @@ class HMGAME_API UHmEquipmentInstance : public UObject
 	GENERATED_BODY()
 public:
 	UHmEquipmentInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	APawn* GetPawn() const;
+	void SpawnEquipmentActors(const TArray<FHmEquipmentActorToSpawn>& ActorsToSpawn);
+	void DestroyEquipmentActors();
+
+	// Event Nodes
+	// 블루프린트로 Implementable한 이벤트로 만들어줄 것이기 떄문에 따로 구현할 필요가 없음
+	UFUNCTION(BlueprintImplementableEvent, Category = Equipment, meta = (DisplayName = "OnEquipped"))
+	void K2_OnEquipped();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Equipment, meta = (DisplayName = "OnUnequipped"))
+	void K2_OnUnequipped();
+
+	virtual void OnEquipped();
+	virtual void OnUnequipped();
 
 	// 어떤 InventoryItemInstance에 의해 활성화되었는지 (추후 퀵바에서 사용)
 	// 해당 장착물을 유발한 자가 누구인가!?
