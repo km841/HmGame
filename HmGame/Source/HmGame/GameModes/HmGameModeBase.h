@@ -29,7 +29,6 @@ public:
 
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) final;
 
-
 	void HandleMatchAssignmentIfNotExceptingOne();
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId);
 

@@ -17,6 +17,9 @@ class HMGAME_API UHmWeaponInstance : public UHmEquipmentInstance
 public:
 	UHmWeaponInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Animation)
+	TSubclassOf<UAnimInstance> PickBestAnimLayer(bool bEquipped, const FGameplayTagContainer& CosmeticTags) const;
+
 	// Weapon에 Equip / Unequip에 대한 Animation Set 정보를 들고 있다. 
 	// 무기 단위로 AnimLayer를 들고 있다?
 	// 경찰 특공대처럼 한쪽 손에는 권총, 한쪽 손에는 방패를 들고 있다면 

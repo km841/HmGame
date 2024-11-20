@@ -25,6 +25,9 @@ struct FHmAnimLayerSelectionSet
 {
 	GENERATED_BODY()
 
+	// Cosmetic Tags에 기반하여 AnimLayer를 반환한다!
+	TSubclassOf<UAnimInstance> SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const;
+
 	// AnimInstance의 Rule을 가진 LayerRules로 보면 됨
 	// AnimBodyStyleSelection의 Rules와 같은 개념..
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

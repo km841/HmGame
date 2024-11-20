@@ -20,7 +20,12 @@ class HMGAME_API UHmEquipmentInstance : public UObject
 public:
 	UHmEquipmentInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintPure, Category=Equipment)
 	APawn* GetPawn() const;
+
+	UFUNCTION(BlueprintPure, Category=Equipment, meta = (DetermineOutputType = PawnType))
+	APawn* GetTypedPawn(TSubclassOf<APawn> PawnType) const;
+
 	void SpawnEquipmentActors(const TArray<FHmEquipmentActorToSpawn>& ActorsToSpawn);
 	void DestroyEquipmentActors();
 

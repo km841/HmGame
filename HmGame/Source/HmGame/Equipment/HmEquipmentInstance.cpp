@@ -16,6 +16,20 @@ APawn* UHmEquipmentInstance::GetPawn() const
 	return Cast<APawn>(GetOuter());
 }
 
+APawn* UHmEquipmentInstance::GetTypedPawn(TSubclassOf<APawn> PawnType) const
+{
+	APawn* Result = nullptr;
+	if (UClass* ActualPawnType = PawnType)
+	{
+		if (GetOuter()->IsA(ActualPawnType))
+		{
+			Result = Cast<APawn>(GetOuter());
+		}
+	}
+
+	return Result;
+}
+
 void UHmEquipmentInstance::SpawnEquipmentActors(const TArray<FHmEquipmentActorToSpawn>& ActorsToSpawn)
 {
 	if (APawn* OwningPawn = GetPawn())

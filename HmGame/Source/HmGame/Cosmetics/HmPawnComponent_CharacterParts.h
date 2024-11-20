@@ -63,9 +63,11 @@ class UHmPawnComponent_CharacterParts : public UPawnComponent
 public:
 	UHmPawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Cosmetics)
+	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
+
 	USkeletalMeshComponent* GetParentMeshComponent() const;
 	USceneComponent* GetSceneComponentToAttachTo() const;
-	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
 	void BroadcastChanged();
 	FHmCharacterPartHandle AddCharacterPart(const FHmCharacterPart& NewPart);
 	void RemoveCharacterPart(FHmCharacterPartHandle Handle);
