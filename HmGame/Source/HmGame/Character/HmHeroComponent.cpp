@@ -13,6 +13,7 @@
 #include "HmGame/Input/HmMappingConfigPair.h"
 #include "HmGame/Input/HmInputComponent.h"
 #include "HmGame/Player/HmPlayerController.h"
+#include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
 #include "InputActionValue.h"
 #include "Components/GameFrameworkComponentManager.h"
 
@@ -122,6 +123,8 @@ void UHmHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Man
 		if (UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
 			PawnData = PawnExtComp->GetPawnData<UHmPawnData>();
+
+			PawnExtComp->InitializeAbilitySystem(HmPS->GetHmAbilitySystemComponent(), HmPS);
 		}
 
 		if (bIsLocallyControlled && PawnData)

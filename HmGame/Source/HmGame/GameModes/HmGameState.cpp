@@ -7,4 +7,5 @@
 AHmGameState::AHmGameState()
 {
 	ExperienceManagerComponent = CreateDefaultSubobject<UHmExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
+
 }

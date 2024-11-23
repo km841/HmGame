@@ -15,6 +15,8 @@ public class HmGame : ModuleRules
 			"InputCore", 
 			"EnhancedInput",
 			"GameplayTags",
+			"GameplayTasks",
+			"GameplayAbilities",
 			"ModularGameplay",
 			"ModularGameplayActors",
 			"GameFeatures",
