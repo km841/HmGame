@@ -5,6 +5,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "HmGame/HmGameplayTags.h"
 #include "HmGame/HmLogChannels.h"
+#include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
 
 const FName UHmPawnExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 
@@ -34,6 +35,39 @@ void UHmPawnExtensionComponent::SetPawnData(const UHmPawnData* InPawnData)
 void UHmPawnExtensionComponent::SetupPlayerInputComponent()
 {
 	CheckDefaultInitialization();
+}
+void UHmPawnExtensionComponent::InitializeAbilitySystem(UHmAbilitySystemComponent* InASC, AActor* InOwnerActor)
+{
+	check(InASC && InOwnerActor);
+
+	if (AbilitySystemComponent == InASC)
+	{
+		return;
+	}
+
+	if (AbilitySystemComponent)
+	{
+		UnInitializeAbilitySystem();
+	}
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+	AActor* ExistingAvatar = InASC->GetAvatarActor();
+	check(!ExistingAvatar);
+
+	// ASC 업데이트
+	// InitAbilityActorInfo를 Pawn과 함께 호출, AvatarActor를 Pawn과 함꼐 업데이트함
+	AbilitySystemComponent = InASC;
+	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+
+}
+void UHmPawnExtensionComponent::UnInitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	AbilitySystemComponent = nullptr;
 }
 void UHmPawnExtensionComponent::OnRegister()
 {

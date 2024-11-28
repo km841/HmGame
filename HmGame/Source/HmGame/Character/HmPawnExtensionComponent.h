@@ -8,6 +8,7 @@
 #include "HmPawnExtensionComponent.generated.h"
 
 class UHmPawnData;
+class UHmAbilitySystemComponent;
 /**
  * 
  */
@@ -32,6 +33,9 @@ public:
 
 	void SetupPlayerInputComponent();
 
+	void InitializeAbilitySystem(UHmAbilitySystemComponent* InASC, AActor* InOwnerActor);
+	void UnInitializeAbilitySystem();
+
 
 	// 컴포넌트나 액터가 생성되는 완전 초반에 일어남
 	// 이 단계에서 컴포넌트 부착함
@@ -47,4 +51,8 @@ public:
 
 	UPROPERTY(EditInstanceOnly, Category = "Hm|Pawn")
 	TObjectPtr<const UHmPawnData> PawnData;
+
+	// AbilitySystemComponent 캐싱
+	UPROPERTY()
+	TObjectPtr<UHmAbilitySystemComponent> AbilitySystemComponent;
 };

@@ -8,6 +8,7 @@
 #include "HmPawnData.generated.h"
 
 class UHmCameraMode;
+class UHmAbilitySet;
 /** 
  * 
  */
@@ -27,4 +28,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|InputConfig")
 	TObjectPtr<UHmInputConfig> InputConfig;
+
+	// 해당 Pawn의 AbilitySystem에 허용할 AbilitySet
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hm|Abilities")
+	TArray<TObjectPtr<UHmAbilitySet>> AbilitySets;
 };
