@@ -5,6 +5,8 @@
 #include "HmGame/GameModes/HmExperienceManagerComponent.h"
 #include "HmGame/GameModes/HmGameModeBase.h"
 #include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
+#include "HmGame/AbilitySystem/HmAbilitySet.h"
+#include "HmGame/Character/HmPawnData.h"
 
 PRAGMA_DISABLE_OPTIMIZATION
 AHmPlayerState::AHmPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -58,4 +60,15 @@ void AHmPlayerState::SetPawnData(const UHmPawnData* InPawnData)
 	check(InPawnData);
 	check(!PawnData);
 	PawnData = InPawnData;
+
+	// PawnData의 AbilitySet을 순회하며, ASC에 Ability를 할당(Give)한다
+	// 이 과정에서 ASC의 ActivatableAbilities에 추가된다.
+
+	for (UHmAbilitySet* AbilitySet : PawnData->AbilitySets)
+	{
+		if (AbilitySet)
+		{
+			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+		}
+	}
 }

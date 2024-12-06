@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "ModularCharacter.h"
 #include "HmCharacter.generated.h"
 
@@ -10,7 +11,7 @@ class UHmPawnExtensionComponent;
 class UHmCameraComponent;
 
 UCLASS()
-class HMGAME_API AHmCharacter : public AModularCharacter
+class HMGAME_API AHmCharacter : public AModularCharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

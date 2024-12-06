@@ -1,6 +1,9 @@
 #include "HmEquipmentManagerComponent.h"
 #include "HmEquipmentDefinition.h"
 #include "HmEquipmentInstance.h"
+#include "AbilitySystemGlobals.h"
+#include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
+#include "HmGame/AbilitySystem/HmAbilitySet.h"
 
 UHmEquipmentInstance* FHmEquipmentList::AddEntry(TSubclassOf<UHmEquipmentDefinition> EquipmentDefinition)
 {
@@ -24,6 +27,15 @@ UHmEquipmentInstance* FHmEquipmentList::AddEntry(TSubclassOf<UHmEquipmentDefinit
 	NewEntry.Instance = NewObject<UHmEquipmentInstance>(OwnerComponent->GetOwner(), InstanceType);
 	Result = NewEntry.Instance;
 
+	UHmAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	check(ASC);
+	{
+		for (TObjectPtr<UHmAbilitySet> AbilitySet : EquipmentCDO->AbilitySetsToGrant)
+		{
+			AbilitySet->GiveToAbilitySystem(ASC, &NewEntry.GrantedHandles, Result);
+		}
+	}
+
 	// ActorsToSpawn을 통해 Actor들을 인스턴스화 한다
 	// 어디에 ? EquipmentInstance에!
 	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
@@ -39,11 +51,28 @@ void FHmEquipmentList::RemoveEntry(UHmEquipmentInstance* Instance)
 		FHmAppliedEquipmentEntry& Entry = *EntryIt;
 		if (Entry.Instance == Instance)
 		{
+			UHmAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+			check(ASC);
+			{
+				Entry.GrantedHandles.TakeFromAbilitySystem(ASC);
+			}
+
 			// Actor 제거 및 Iterator에서 안전하게 제거
 			Instance->DestroyEquipmentActors();
 			EntryIt.RemoveCurrent();
 		}
 	}
+}
+
+UHmAbilitySystemComponent* FHmEquipmentList::GetAbilitySystemComponent() const
+{
+	check(OwnerComponent);
+	AActor* OwningActor = OwnerComponent->GetOwner();
+
+	// - EquipmentManagerComponent는 AHmCharacter를 Owner로 가지고 있다
+	// - 해당 함수는 IAbilitySystemInterface를 통해 AbilitySystemComponent를 반환한다
+	// - 우리는 ACharacter에 IAbilitySystemInterface를 상속받아야 한다!
+	return Cast<UHmAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor));
 }
 
 UHmEquipmentManagerComponent::UHmEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer)

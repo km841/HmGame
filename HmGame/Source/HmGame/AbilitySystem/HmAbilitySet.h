@@ -32,6 +32,19 @@ public:
 	int32 AbilityLevel = 1;
 };
 
+USTRUCT(BlueprintType)
+struct FHmAbilitySet_GrantedHandles
+{
+	GENERATED_BODY()
+public:
+	void AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
+	void TakeFromAbilitySystem(UHmAbilitySystemComponent* HmASC);
+
+protected:
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+};
+
 
 UCLASS(BlueprintType)
 class UHmAbilitySet : public UPrimaryDataAsset
@@ -39,6 +52,9 @@ class UHmAbilitySet : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	UHmAbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	void GiveToAbilitySystem(UHmAbilitySystemComponent* HmASC, FHmAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr);
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Abilities")
 	TArray<FHmAbilitySet_GameplayAbility> GrantedGameplayAbilities;

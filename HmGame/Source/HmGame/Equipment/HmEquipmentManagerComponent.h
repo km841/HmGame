@@ -1,5 +1,6 @@
 #pragma once
 #include "Components/PawnComponent.h"
+#include "HmGame/AbilitySystem/HmAbilitySet.h"
 #include "HmEquipmentManagerComponent.generated.h"
 
 class UHmEquipmentDefinition;
@@ -17,6 +18,9 @@ struct FHmAppliedEquipmentEntry
 	// EquipmentDefinition을 통해 생성된 인스턴스
 	UPROPERTY()
 	TObjectPtr<UHmEquipmentInstance> Instance = nullptr;
+
+	UPROPERTY()
+	FHmAbilitySet_GrantedHandles GrantedHandles;
 };
 
 // EquipmentInstance의 Instance를 Entry에서 관리하고 있다.
@@ -32,6 +36,8 @@ struct FHmEquipmentList
 
 	UHmEquipmentInstance* AddEntry(TSubclassOf<UHmEquipmentDefinition> EquipmentDefinition);
 	void RemoveEntry(UHmEquipmentInstance* Instance);
+
+	UHmAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	// 장착물에 대한 관리 리스트
 	UPROPERTY()

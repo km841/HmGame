@@ -8,6 +8,7 @@
 #include "HmEquipmentDefinition.generated.h"
 
 class UHmEquipmentInstance;
+class UHmAbilitySet;
 
 USTRUCT()
 struct FHmEquipmentActorToSpawn
@@ -47,5 +48,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Equipment)
 	TArray<FHmEquipmentActorToSpawn> ActorsToSpawn;
 
+	UPROPERTY(EditDefaultsOnly, Category = Equipment)
+	TArray<TObjectPtr<UHmAbilitySet>> AbilitySetsToGrant;
 
 };
