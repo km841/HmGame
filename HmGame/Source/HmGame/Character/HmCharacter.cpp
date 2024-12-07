@@ -4,6 +4,7 @@
 #include "HmCharacter.h"
 #include "HmPawnExtensionComponent.h"
 #include "HmGame/Camera/HmCameraComponent.h"
+#include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
 
 // Sets default values
 AHmCharacter::AHmCharacter()
@@ -41,5 +42,10 @@ void AHmCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	// 이 시점에선 반드시 PlayerController가 존재한다!
 	PawnExtComponent->SetupPlayerInputComponent();
+}
+
+UAbilitySystemComponent* AHmCharacter::GetAbilitySystemComponent() const
+{
+	return PawnExtComponent->GetHmAbilitySystemComponent();
 }
 

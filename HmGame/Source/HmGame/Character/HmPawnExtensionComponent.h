@@ -49,6 +49,8 @@ public:
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
 	virtual void CheckDefaultInitialization() final;
 
+	UHmAbilitySystemComponent* GetHmAbilitySystemComponent() const { return AbilitySystemComponent; }
+
 	UPROPERTY(EditInstanceOnly, Category = "Hm|Pawn")
 	TObjectPtr<const UHmPawnData> PawnData;
 
