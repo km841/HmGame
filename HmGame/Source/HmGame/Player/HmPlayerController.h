@@ -6,6 +6,8 @@
 #include "ModularPlayerController.h"
 #include "HmPlayerController.generated.h"
 
+class AHmPlayerState;
+class UHmAbilitySystemComponent;
 /**
  * 
  */
@@ -16,5 +18,10 @@ class HMGAME_API AHmPlayerController : public AModularPlayerController
 
 public:
 	AHmPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	
+
+	AHmPlayerState* GetHmPlayerState() const;
+	UHmAbilitySystemComponent* GetHmAbilitySystemComponent() const;
 };

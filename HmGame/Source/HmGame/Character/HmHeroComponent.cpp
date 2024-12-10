@@ -228,6 +228,11 @@ void UHmHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 
 				UHmInputComponent* HmIC = CastChecked<UHmInputComponent>(PlayerInputComponent);
 				{
+					{
+						TArray<uint32> BindHandles;
+						HmIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+					}
+
 					HmIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
 					HmIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 				}
@@ -294,4 +299,32 @@ void UHmHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue
 	}
 
 
+}
+
+void UHmHeroComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UHmAbilitySystemComponent* HmASC = PawnExtComp->GetHmAbilitySystemComponent())
+			{
+				HmASC->AbilityInputTagPressed(InputTag);
+			}
+		}
+	}
+}
+
+void UHmHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UHmPawnExtensionComponent* PawnExtComp = UHmPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UHmAbilitySystemComponent* HmASC = PawnExtComp->GetHmAbilitySystemComponent())
+			{
+				HmASC->AbilityInputTagReleased(InputTag);
+			}
+		}
+	}
 }

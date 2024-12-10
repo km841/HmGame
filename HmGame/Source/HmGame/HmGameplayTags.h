@@ -21,6 +21,7 @@ struct FHmGameplayTags
 
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
+	FGameplayTag InputTag_Weapon_Fire;
 
 private:
 	static FHmGameplayTags GameplayTags;
