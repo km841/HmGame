@@ -16,23 +16,21 @@ AHmPlayerState::AHmPlayerState(const FObjectInitializer& ObjectInitializer)
 }
 PRAGMA_ENABLE_OPTIMIZATION
 
-void AHmPlayerState::PostInitializerComponents()
+void AHmPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	check(AbilitySystemComponent);
-	{
-		// 처음 InitAbilityActorInfo 호출 당시, OwnerActor와 AvatarActor가 같은 Actor를 가리키고 있으며, 이것은 PlayerState이다.
-		// OwnerActor는 PlayerState가 의도한게 맞지만, AvatarActor는 PlayerController가 소유하는 대상인 Pawn이 되어야 한다!
-		// 이를 위해 재 세팅을 해준다.
 
+	check(AbilitySystemComponent);
+	// 아래의 코드는 우리가 InitAbilityActorInfo를 재호출을 통하는 이유를 설명하는 코드이다:
+	{
+		// 처음 InitAbilityActorInfo를 호출 당시, OwnerActor와 AvatarActo가 같은 Actor를 가르키고 있으며, 이는 PlayerState이다
+		// - OwnerActor는 PlayerState가 의도하는게 맞지만, AvatarActor는 PlayerController가 소유하는 대상인 Pawn이 되어야 한다!
+		// - 이를 위해 재-세팅을 해준다
 		FGameplayAbilityActorInfo* ActorInfo = AbilitySystemComponent->AbilityActorInfo.Get();
 		check(ActorInfo->OwnerActor == this);
 		check(ActorInfo->OwnerActor == ActorInfo->AvatarActor);
 	}
-	// Avatar Actor를 Nullptr로 밀어버린다!
-	// 이 함수를 지금은 Nullptr로 밀어뒀지만, 다시 한번 호출해서 제대로 세팅해주어야 한다!
 	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
-
 
 	AGameStateBase* GameState = GetWorld()->GetGameState();
 	check(GameState);
@@ -41,7 +39,6 @@ void AHmPlayerState::PostInitializerComponents()
 	check(ExperienceManagerComponent);
 
 	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnHmExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
-
 }
 
 void AHmPlayerState::OnExperienceLoaded(const UHmExperienceDefinition* CurrentExperience)

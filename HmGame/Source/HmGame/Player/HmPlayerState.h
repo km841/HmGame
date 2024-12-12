@@ -22,7 +22,7 @@ class HMGAME_API AHmPlayerState : public APlayerState
 public:
 	AHmPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual void PostInitializerComponents() final;
+	virtual void PostInitializeComponents() final;
 
 	template<class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
