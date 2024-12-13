@@ -11,4 +11,6 @@ class UHmGameplayAbility_RangedWeapon : public UHmGameplayAbility_FromEquipment
 public:
 	UHmGameplayAbility_RangedWeapon(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable)
+	void StartRangedWeaponTargeting();
 };

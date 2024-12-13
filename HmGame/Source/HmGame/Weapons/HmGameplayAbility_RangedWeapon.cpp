@@ -5,3 +5,8 @@ UHmGameplayAbility_RangedWeapon::UHmGameplayAbility_RangedWeapon(const FObjectIn
 {
 
 }
+
+void UHmGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
+{
+
+}
