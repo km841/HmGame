@@ -10,3 +10,5 @@
 Weapon에서 총알이 격발되는 Ability를 연결한 후 마우스 좌클릭을 통한 Fire 테스트 진행<br/>
 
 ![calc](https://github.com/user-attachments/assets/85d17806-cf85-420c-9846-429f2d5b7e7c)<br/>
+
+![bandicam2024-12-2106-22-21-482-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/2d0498d2-62e9-484f-b415-b7a9822c52ea)
