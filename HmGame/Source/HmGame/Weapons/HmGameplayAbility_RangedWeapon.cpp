@@ -1,5 +1,8 @@
 #include "HmGameplayAbility_RangedWeapon.h"
 #include "HmRangedWeaponInstance.h"
+#include "HmGame/AbilitySystem/HmAbilitySystemComponent.h"
+#include "HmGame/AbilitySystem/HmGameplayAbilityTargetData_SingleTargetHit.h"
+#include "HmGame/Physics/HmCollisionChannels.h"
 
 UHmGameplayAbility_RangedWeapon::UHmGameplayAbility_RangedWeapon(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -28,6 +31,74 @@ int32 UHmGameplayAbility_RangedWeapon::FindFirstPawnHitResult(const TArray<FHitR
 	return INDEX_NONE;
 }
 
+void UHmGameplayAbility_RangedWeapon::AddAdditionalTraceIgnoreActors(FCollisionQueryParams& TraceParams) const
+{
+	if (AActor* Avatar = GetAvatarActorFromActorInfo())
+	{
+		TArray<AActor*> AttachedActors;
+
+		// GetAttachedActors느 Recursively하게 모든 Actor를 추출한다.
+		Avatar->GetAttachedActors(AttachedActors);
+
+		// 이 액터들의 콜리전은 무시하도록 다 등록한다.
+		TraceParams.AddIgnoredActors(AttachedActors);
+	}
+}
+
+ECollisionChannel UHmGameplayAbility_RangedWeapon::DetermineTraceChannel(FCollisionQueryParams& TraceParams, bool bIsSimulated) const
+{
+	return Hm_TraceChannel_Weapon;
+}
+
+FHitResult UHmGameplayAbility_RangedWeapon::WeaponTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius, bool bIsSimulated, TArray<FHitResult>& OutHitResults) const
+{
+	TArray<FHitResult> HitResults;
+
+	// Complex Geometry로 Trace를 진행하며, AvatarActor를 AttachParent를 가지는 오브젝트와의 충돌은 무시한다.
+	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(WeaponTrace), true, GetAvatarActorFromActorInfo());
+	TraceParams.bReturnPhysicalMaterial = true;
+
+	// Avatar Actor에 부착된 Actors를 찾아 IgnoredActors에 추가한다.
+	AddAdditionalTraceIgnoreActors(TraceParams);
+
+	const ECollisionChannel TraceChannel = DetermineTraceChannel(TraceParams, bIsSimulated);
+
+	if (SweepRadius > 0.0f)
+	{
+		GetWorld()->SweepMultiByChannel(HitResults, StartTrace, EndTrace, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(SweepRadius), TraceParams);
+	}
+	else
+	{
+		GetWorld()->LineTraceMultiByChannel(HitResults, StartTrace, EndTrace, TraceChannel, TraceParams);
+	}
+
+	FHitResult Hit(ForceInit);
+	if (HitResults.Num() > 0)
+	{
+		for (FHitResult& CurHitResult : HitResults)
+		{
+			auto Pred = [&CurHitResult](const FHitResult& Other)
+				{
+					return Other.HitObjectHandle == CurHitResult.HitObjectHandle;
+				};
+
+			if (!OutHitResults.ContainsByPredicate(Pred))
+			{
+				OutHitResults.Add(CurHitResult);
+			}
+		}
+
+		Hit = OutHitResults.Last();
+	}
+	else
+	{
+		Hit.TraceStart = StartTrace;
+		Hit.TraceEnd = EndTrace;
+	}
+
+	return Hit;
+}
+
 FHitResult UHmGameplayAbility_RangedWeapon::DoSingleBulletTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius, bool bIsSimulated, TArray<FHitResult>& OutHits) const
 {
 	FHitResult Impact;
@@ -37,9 +108,45 @@ FHitResult UHmGameplayAbility_RangedWeapon::DoSingleBulletTrace(const FVector& S
 		Impact = WeaponTrace(StartTrace, EndTrace, 0.0f, bIsSimulated, OutHits);
 	}
 
+	if (FindFirstPawnHitResult(OutHits) == INDEX_NONE)
+	{
+		if (SweepRadius > 0.0f)
+		{
+			TArray<FHitResult> SweepHits;
+			Impact = WeaponTrace(StartTrace, EndTrace, SweepRadius, bIsSimulated, SweepHits);
+
+			const int32 FirstPawnIdx = FindFirstPawnHitResult(SweepHits);
+
+			if (SweepHits.IsValidIndex(FirstPawnIdx))
+			{
+				bool bUseSweepHits = true;
+				for (int32 Idx = 0; Idx < FirstPawnIdx; ++Idx)
+				{
+					const FHitResult& CurHitResult = SweepHits[Idx];
+					auto Pred = [&CurHitResult](const FHitResult& Other)
+						{
+							return Other.HitObjectHandle == CurHitResult.HitObjectHandle;
+						};
+
+					if (CurHitResult.bBlockingHit && OutHits.ContainsByPredicate(Pred))
+					{
+						bUseSweepHits = false;
+						break;
+					}
+				}
+
+				if (bUseSweepHits)
+				{
+					OutHits = SweepHits;
+				}
+			}
+		}
+	}
+
+
 	// 이어서 계속
 
-	return FHitResult();
+	return Impact;
 }
 
 void UHmGameplayAbility_RangedWeapon::TraceBulletsInCartridge(const FRangedWeaponFiringInput & InputData, TArray<FHitResult>&OutHits)
@@ -74,11 +181,14 @@ void UHmGameplayAbility_RangedWeapon::TraceBulletsInCartridge(const FRangedWeapo
 
 	if (OutHits.Num() == 0)
 	{
+		if (!Impact.bBlockingHit)
+		{
+			Impact.Location = EndTrace;
+			Impact.ImpactPoint = EndTrace;
+		}
 
+		OutHits.Add(Impact);
 	}
-
-	// 이어서 계속
-
 }
 
 UHmRangedWeaponInstance* UHmGameplayAbility_RangedWeapon::GetWeaponInstance()
@@ -127,7 +237,7 @@ FTransform UHmGameplayAbility_RangedWeapon::GetTargetingTransform(APawn* SourceP
 	const FVector WeaponLoc = GetWeaponTargetingSourceLocation();
 	FVector FinalCamLoc = FocalLoc + (((WeaponLoc - FocalLoc) | AimDir) * AimDir);
 
-#if 0
+#if 1
 	{
 		// WeaponLoc (사실상 ActorLoc)
 		DrawDebugPoint(GetWorld(), WeaponLoc, 10.0f, FColor::Red, false, 60.0f);
@@ -174,6 +284,26 @@ void UHmGameplayAbility_RangedWeapon::PerformLocalTargeting(TArray<FHitResult>& 
 #endif
 
 		TraceBulletsInCartridge(InputData, OutHits);
+	}
+}
+
+void UHmGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag)
+{
+	UAbilitySystemComponent* MyAbilitySystemComponent = CurrentActorInfo->AbilitySystemComponent.Get();
+	check(MyAbilitySystemComponent);
+
+	if (const FGameplayAbilitySpec* AbilitySpec = MyAbilitySystemComponent->FindAbilitySpecFromHandle(CurrentSpecHandle))
+	{
+		FGameplayAbilityTargetDataHandle LocalTargetDataHandle(MoveTemp(const_cast<FGameplayAbilityTargetDataHandle&>(InData)));
+
+		if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
+		{
+			OnRangeWeaponTargetDataReady(LocalTargetDataHandle);
+		}
+		else
+		{
+			K2_EndAbility();
+		}
 	}
 }
 

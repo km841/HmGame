@@ -38,6 +38,11 @@ public:
 
 	int32 FindFirstPawnHitResult(const TArray<FHitResult>& HitResults) const;
 
+	void AddAdditionalTraceIgnoreActors(FCollisionQueryParams& TraceParams) const;
+
+	ECollisionChannel DetermineTraceChannel(FCollisionQueryParams& TraceParams, bool bIsSimulated) const;
+
+	FHitResult WeaponTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius, bool bIsSimulated, TArray<FHitResult>& OutHitResults) const;
 	FHitResult DoSingleBulletTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius, bool bIsSimulated, TArray<FHitResult>& OutHits) const;
 	void TraceBulletsInCartridge(const FRangedWeaponFiringInput& InputData, TArray<FHitResult>& OutHits);
 
@@ -49,6 +54,11 @@ public:
 
 	void PerformLocalTargeting(TArray<FHitResult>& OutHits);
 
+	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag);
+
 	UFUNCTION(BlueprintCallable)
 	void StartRangedWeaponTargeting();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnRangeWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
 };
