@@ -58,6 +58,9 @@ public:
 	UHmEquipmentInstance* EquipItem(TSubclassOf<UHmEquipmentDefinition> EquipmentDefinition);
 	void UnequipItem(UHmEquipmentInstance* ItemInstance);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<UHmEquipmentInstance*> GetEquipmentInstanceOfType(TSubclassOf<UHmEquipmentInstance> InstanceType) const;
+
 	UPROPERTY()
 	FHmEquipmentList EquipmentList;
 };

@@ -27,4 +27,6 @@ void FHmGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Move, "InputTag.Move", "");
 	AddTag(InputTag_Look_Mouse, "InputTag.Look.Mouse", "");
 	AddTag(InputTag_Weapon_Fire, "InputTag.Weapon.Fire", "");
+
+	AddTag(Event_Movement_WeaponFire, "Event.Movement.WeaponFire", "");
 }

@@ -107,4 +107,24 @@ void UHmEquipmentManagerComponent::UnequipItem(UHmEquipmentInstance* ItemInstanc
 	}
 }
 
+TArray<UHmEquipmentInstance*> UHmEquipmentManagerComponent::GetEquipmentInstanceOfType(TSubclassOf<UHmEquipmentInstance> InstanceType) const
+{
+	TArray<UHmEquipmentInstance*> Results;
+
+	for (const FHmAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UHmEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				Results.Add(Instance);
+			}
+		}
+	}
+
+	// EquipmentList에서 인자로 받은 InstanceType만 추려서 반환하는 함수
+
+	return Results;
+}
+
 
