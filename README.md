@@ -3,7 +3,7 @@
 <br/>
 #**2024-12-21**<br/>
 **GAS를 이용한 Weapon Fire 구현**<br/>
-1. 파란색 Line (Camera Position)<br/>
+1. 파란색 Line (Camera Position 에서 Focal Position을 향하는 벡터)<br/>
 2. 노란색 Line (Character Position 에서 Focal Position을 향하는 벡터)<br/>
 3. 빨간색 Line (파란색 Line에 노란색 Line을 내적하여 Projection 한 것)<br/>
 <br/>
